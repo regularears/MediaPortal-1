@@ -138,6 +138,8 @@ CDeMultiplexer::CDeMultiplexer(CTsDuration& duration,CTsReaderFilter& filter)
   LogDebug(" ");
   LogDebug("=================== New filter instance ===========================");
   LogDebug("  Logging format: [Date Time] [InstanceID] [ThreadID] Message....  ");
+  LogDebug("                                                                   ");
+  LogDebug("             !!!!! Experimental version !!!!!                      ");
   LogDebug("===================================================================");
   LogDebug("demux: Start file read thread");
   
@@ -548,6 +550,7 @@ void CDeMultiplexer::FlushVideo()
   m_bVideoAtEof=false;
   m_MinVideoDelta = 10.0 ;
   _InterlockedAnd(&m_AVDataLowCount, 0) ;
+  _InterlockedAnd(&m_AVDataLowPauseTime, 0) ;
   if (!m_bShuttingDown)
   {
     m_filter.m_bRenderingClockTooFast=false;
@@ -589,6 +592,7 @@ void CDeMultiplexer::FlushAudio()
   m_bAudioAtEof = false;
   m_MinAudioDelta = 10.0;
   _InterlockedAnd(&m_AVDataLowCount, 0);
+  _InterlockedAnd(&m_AVDataLowPauseTime, 0) ;
   if (!m_bShuttingDown)
   {
     m_filter.m_bRenderingClockTooFast=false;
@@ -1027,6 +1031,7 @@ int CDeMultiplexer::ReadAheadFromFile()
   if (m_filter.State() != State_Running)
   {
     _InterlockedAnd(&m_AVDataLowCount, 0);
+    _InterlockedAnd(&m_AVDataLowPauseTime, 0) ;
     m_bVideoSampleLate=false;
     m_bAudioSampleLate=false;
   }
@@ -1146,7 +1151,7 @@ int CDeMultiplexer::ReadFromFile()
 /// if will :
 ///  - decode any new pat/pmt/sdt
 ///  - decode any audio/video packets and put the PES packets in the appropiate buffers
-void CDeMultiplexer::OnTsPacket(byte* tsPacket)
+void CDeMultiplexer::OnTsPacket(byte* tsPacket, int bufferOffset, int bufferLength)
 {
   //LogDebug("OnTsPacket() start");
   CTsHeader header(tsPacket);
@@ -1230,8 +1235,8 @@ void CDeMultiplexer::OnTsPacket(byte* tsPacket)
   }
 
   //process the ts packet further
-  FillVideo(header,tsPacket);
-  FillAudio(header,tsPacket);
+  FillVideo(header,tsPacket, bufferOffset, bufferLength);
+  FillAudio(header,tsPacket, bufferOffset, bufferLength);
   FillSubtitle(header,tsPacket);
   FillTeletext(header,tsPacket);
 }
@@ -1248,7 +1253,7 @@ bool CDeMultiplexer::CheckContinuity(int prevCC, CTsHeader& header)
 
 /// This method will check if the tspacket is an audio packet
 /// ifso, it decodes the PES audio packet and stores it in the audio buffers
-void CDeMultiplexer::FillAudio(CTsHeader& header, byte* tsPacket)
+void CDeMultiplexer::FillAudio(CTsHeader& header, byte* tsPacket, int bufferOffset, int bufferLength)
 {
   //LogDebug("FillAudio - audio PID %d", m_audioPid );
   CAutoLock flock (&m_sectionFlushAudio);
@@ -1261,7 +1266,7 @@ void CDeMultiplexer::FillAudio(CTsHeader& header, byte* tsPacket)
 
   if(!CheckContinuity(m_AudioPrevCC, header))
   {
-    LogDebug("Audio Continuity error... %x ( prev %x )", header.ContinuityCounter, m_AudioPrevCC);
+    LogDebug("Audio Continuity error... %x ( prev %x ), bufferOffset=%d, bufferLength=%d", header.ContinuityCounter, m_AudioPrevCC, bufferOffset, bufferLength);
     if (!m_DisableDiscontinuitiesFiltering) 
     {
       m_AudioValidPES=false;  
@@ -1359,6 +1364,7 @@ void CDeMultiplexer::FillAudio(CTsHeader& header, byte* tsPacket)
               {
                 LogDebug("Demux : Audio to render too late= %03.3f Sec", Delta) ;
                 //  m_filter.m_bRenderingClockTooFast=true;
+                _InterlockedIncrement(&m_AVDataLowCount);   
                 m_MinAudioDelta+=1.0;
                 m_MinVideoDelta+=1.0;                
               }
@@ -1469,7 +1475,7 @@ void CDeMultiplexer::FillAudio(CTsHeader& header, byte* tsPacket)
 
 
 /// This method will check if the tspacket is an video packet
-void CDeMultiplexer::FillVideo(CTsHeader& header, byte* tsPacket)
+void CDeMultiplexer::FillVideo(CTsHeader& header, byte* tsPacket, int bufferOffset, int bufferLength)
 {                  
   CAutoLock lock (&m_sectionFlushVideo);
   
@@ -1480,7 +1486,7 @@ void CDeMultiplexer::FillVideo(CTsHeader& header, byte* tsPacket)
 
   if (!CheckContinuity(m_VideoPrevCC, header))
   {
-    LogDebug("Video Continuity error... %x ( prev %x )", header.ContinuityCounter, m_VideoPrevCC);
+    LogDebug("Video Continuity error... %x ( prev %x ), bufferOffset=%d, bufferLength=%d", header.ContinuityCounter, m_VideoPrevCC, bufferOffset, bufferLength);
     if (!m_DisableDiscontinuitiesFiltering)
     {
       m_VideoValidPES = false;  
@@ -1929,6 +1935,7 @@ void CDeMultiplexer::FillVideoH264(CTsHeader& header, byte* tsPacket)
                 {
                   LogDebug("Demux : Video to render too late= %03.3f Sec", Delta) ;
                   //  m_filter.m_bRenderingClockTooFast=true;
+                  _InterlockedIncrement(&m_AVDataLowCount);   
                   m_MinAudioDelta+=1.0;
                   m_MinVideoDelta+=1.0;                
                 }
@@ -2399,9 +2406,9 @@ void CDeMultiplexer::FillVideoMPEG2(CTsHeader& header, byte* tsPacket)
                   }
                   else if (Delta < 0.2)
                   {
-                    //_InterlockedIncrement(&m_VideoDataLowCount);              
                     LogDebug("Demux : Video to render too late= %03.3f Sec", Delta) ;
                     //  m_filter.m_bRenderingClockTooFast=true;
+                    _InterlockedIncrement(&m_AVDataLowCount);   
                     m_MinAudioDelta+=1.0;
                     m_MinVideoDelta+=1.0;                
                   }

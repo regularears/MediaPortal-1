@@ -403,7 +403,7 @@ CTsReaderFilter::CTsReaderFilter(IUnknown *pUnk, HRESULT *phr):
     keyValue = (DWORD)m_regInitialBuffDelay;
     LPCTSTR initialBuffDelay_RRK = _T("BufferingDelayInMilliSeconds");
     ReadRegistryKeyDword(key, initialBuffDelay_RRK, keyValue);
-    if ((keyValue >= 0) && (keyValue <= 2000))
+    if ((keyValue >= 0) && (keyValue <= 10000))
     {
       m_regInitialBuffDelay = (LONG)keyValue;
       LogDebug("--- Buffering delay = %d ms", m_regInitialBuffDelay);
@@ -411,7 +411,7 @@ CTsReaderFilter::CTsReaderFilter(IUnknown *pUnk, HRESULT *phr):
     else
     {
       m_regInitialBuffDelay = INITIAL_BUFF_DELAY;
-      LogDebug("--- Buffering delay = %d ms (default value, allowed range is %d - %d)", m_regInitialBuffDelay, 0, 2000);
+      LogDebug("--- Buffering delay = %d ms (default value, allowed range is %d - %d)", m_regInitialBuffDelay, 0, 10000);
     }
     
     keyValue = 0;
@@ -1655,7 +1655,7 @@ void CTsReaderFilter::ThreadProc()
     else
     {
       pauseWaitTime = 3000;
-      underRunLimit = 20;
+      underRunLimit = 10;
       longPause = false;
     }
 
@@ -1664,6 +1664,7 @@ void CTsReaderFilter::ThreadProc()
     {
       lastDataLowTime = timeNow;
       _InterlockedAnd(&m_demultiplexer.m_AVDataLowCount, 0);
+      _InterlockedAnd(&m_demultiplexer.m_AVDataLowPauseTime, 0) ;
     }
     else if (m_demultiplexer.m_AVDataLowCount > underRunLimit)
     {      
@@ -1673,13 +1674,14 @@ void CTsReaderFilter::ThreadProc()
         m_bRenderingClockTooFast=true;
         if (timeNow < (lastDataLowTime + (pauseWaitTime/2))) //Reached trigger point in a short time
         {
-          BufferingPause(true); //Force longer pause      
+          BufferingPause(true, m_demultiplexer.m_AVDataLowPauseTime); //Force longer pause      
         }
         else
         {
-          BufferingPause(longPause); //Pause for a short time         
+          BufferingPause(longPause, m_demultiplexer.m_AVDataLowPauseTime); //Pause for a short time         
         }
         _InterlockedAnd(&m_demultiplexer.m_AVDataLowCount, 0);
+        _InterlockedAnd(&m_demultiplexer.m_AVDataLowPauseTime, 0) ;
         m_bRenderingClockTooFast=false ;
         m_demultiplexer.m_bVideoSampleLate=false;
         m_demultiplexer.m_bAudioSampleLate=false;
@@ -1688,6 +1690,7 @@ void CTsReaderFilter::ThreadProc()
       {
         lastDataLowTime = timeNow;
         _InterlockedAnd(&m_demultiplexer.m_AVDataLowCount, 0);
+        _InterlockedAnd(&m_demultiplexer.m_AVDataLowPauseTime, 0) ;
         m_demultiplexer.m_bVideoSampleLate=false;
         m_demultiplexer.m_bAudioSampleLate=false;
       }
@@ -2211,7 +2214,7 @@ void CTsReaderFilter::SetMediaPosition(REFERENCE_TIME MediaPos)
   //Functionality now internal to TsReader
 }
 
-void CTsReaderFilter::BufferingPause(bool longPause)
+void CTsReaderFilter::BufferingPause(bool longPause, long extraSleep)
 {
   // Must be called from CTsReaderFilter::ThreadProc() to allow TsReader to "Pause" itself without deadlock issue.
 
@@ -2224,11 +2227,10 @@ void CTsReaderFilter::BufferingPause(bool longPause)
       return ;                  
     }
 
-    DWORD sleepTime = 195; //Pause length in ms
+    DWORD sleepTime = 195 + (DWORD)(min(500, max(0, extraSleep))); //Pause length in ms
     DWORD minDelayTime = 5000; //Min time between pauses in ms
     if (longPause)
     {
-      sleepTime = 195 ;    //Longer pauses at start of play              
       minDelayTime = 500 ; //Shorter time between pauses at start of play   
     }          
     

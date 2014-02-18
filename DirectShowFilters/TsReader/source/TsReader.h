@@ -44,12 +44,12 @@
 #define FS_TIM_LIM (2000*10000) //2 seconds in hns units
 #define FS_ADDON_LIM (1000*10000) //1 second in hns units (must not be zero)
 #define INITIAL_BUFF_DELAY 0      // ms units
-#define AUDIO_DELAY (1*10000)             //hns units - audio timestamp offset
-#define AV_READY_DELAY 400     // ms units
-#define PRESENT_DELAY (300*10000) // hns units - timestamp compensation offset
-#define AUDIO_READY_POINT 0.7     // in seconds
-#define AUDIO_STALL_POINT 1.1     // in seconds
-#define VIDEO_STALL_POINT 2.5     // in seconds
+#define AUDIO_DELAY (0*10000)     //hns units - audio timestamp offset (delays audio relative to video)
+#define AV_READY_DELAY 200     // ms units - delay before asserting VFW_S_CANT_CUE
+#define PRESENT_DELAY (200*10000) // hns units - timestamp compensation offset
+#define AUDIO_READY_POINT (0.2f + ((float)PRESENT_DELAY/10000000.0f))    // in seconds
+#define AUDIO_STALL_POINT 1.1f     // in seconds
+#define VIDEO_STALL_POINT 2.5f     // in seconds
 
 //Vid/Aud/Sub buffer sizes and limits
 #define MAX_AUD_BUF_SIZE 1024
@@ -310,7 +310,7 @@ private:
   HRESULT AddGraphToRot(IUnknown *pUnkGraph);
   void    RemoveGraphFromRot();
   void    SetMediaPosnUpdate(REFERENCE_TIME MediaPos);
-  void    BufferingPause(bool longPause);
+  void    BufferingPause(bool longPause, long extraSleep);
   void    ReadRegistryKeyDword(HKEY hKey, LPCTSTR& lpSubKey, DWORD& data);
   void    WriteRegistryKeyDword(HKEY hKey, LPCTSTR& lpSubKey, DWORD& data);
     

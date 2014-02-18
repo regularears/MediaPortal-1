@@ -71,13 +71,13 @@ public:
   CBuffer*   GetSubtitle();
   void       EraseAudioBuff();
   void       EraseVideoBuff();
-  void       OnTsPacket(byte* tsPacket);
+  void       OnTsPacket(byte* tsPacket, int bufferOffset, int bufferLength);
   void       OnNewChannel(CChannelInfo& info);
   void       SetFileReader(FileReader* reader);
   void       FillSubtitle(CTsHeader& header, byte* tsPacket);
   bool       CheckContinuity(int prevCC, CTsHeader& header);
-  void       FillAudio(CTsHeader& header, byte* tsPacket);
-  void       FillVideo(CTsHeader& header, byte* tsPacket);
+  void       FillAudio(CTsHeader& header, byte* tsPacket, int bufferOffset, int bufferLength);
+  void       FillVideo(CTsHeader& header, byte* tsPacket, int bufferOffset, int bufferLength);
   void       FillVideoH264(CTsHeader& header, byte* tsPacket);
   void       FillVideoMPEG2(CTsHeader& header, byte* tsPacket);
   void       FillTeletext(CTsHeader& header, byte* tsPacket);
@@ -161,6 +161,7 @@ public:
   //  long m_AudioDataLowCount;
   //  long m_VideoDataLowCount;
   long m_AVDataLowCount;
+  long m_AVDataLowPauseTime;
   DWORD m_targetAVready;
   bool  m_bSubtitleCompensationSet;
   bool m_bShuttingDown;

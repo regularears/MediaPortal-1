@@ -483,16 +483,17 @@ HRESULT CAudioPin::FillBuffer(IMediaSample *pSample)
             //Samples times are getting close to presentation time
             demux.m_bAudioSampleLate = true;  
              
-            if (fTime < 0.02)
+            if (fTime < 0.05)
             {              
+              _InterlockedExchange(&demux.m_AVDataLowPauseTime, (long)((fTime-0.02) * -1000.0));
               //Samples are running very late - check if this is a persistant problem by counting over a period of time 
               //(m_AVDataLowCount is checked in CTsReaderFilter::ThreadProc())
-              _InterlockedExchangeAdd(&demux.m_AVDataLowCount, 1);   
+              _InterlockedIncrement(&demux.m_AVDataLowCount);   
             }
             
             if (fTime < -2.0)
             { 
-              LogDebug("vidPin : Audio to render very late, flushing") ;
+              LogDebug("audPin : Audio to render very late, flushing") ;
               //Very late - request internal flush and re-sync to stream
               demux.DelegatedFlush(false);
             }

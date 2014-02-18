@@ -74,7 +74,6 @@ public:
 protected:
 	HRESULT RefreshTSBufferFile();
 	HRESULT GetFileLength(LPWSTR pFilename, __int64 &length);
-  void RefreshFileSize();
 
 //	SharedMemory* m_pSharedMemory;
 	FileReader m_TSBufferFile;
@@ -92,7 +91,6 @@ protected:
 	BOOL     m_bReadOnly;
 	BOOL     m_bDelay;
 	BOOL     m_bDebugOutput;
-  __int64  m_cachedFileSize;
 
 };
 
