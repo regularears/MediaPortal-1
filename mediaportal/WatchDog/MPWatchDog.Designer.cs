@@ -30,10 +30,10 @@ namespace WatchDog
     {
       this.components = new System.ComponentModel.Container();
       this.settingsGroup = new System.Windows.Forms.GroupBox();
+      this.btnZipFileReset = new System.Windows.Forms.Button();
       this.btnZipFile = new System.Windows.Forms.Button();
       this.tbZipFile = new System.Windows.Forms.TextBox();
       this.logDirLabel = new System.Windows.Forms.Label();
-      this.label3 = new System.Windows.Forms.Label();
       this.ExportLogsRadioButton = new System.Windows.Forms.RadioButton();
       this.label1 = new System.Windows.Forms.Label();
       this.SafeModeRadioButton = new System.Windows.Forms.RadioButton();
@@ -44,6 +44,9 @@ namespace WatchDog
       this.menuItem4 = new System.Windows.Forms.MenuItem();
       this.menuItem8 = new System.Windows.Forms.MenuItem();
       this.menuItem5 = new System.Windows.Forms.MenuItem();
+      this.menuItem9 = new System.Windows.Forms.MenuItem();
+      this.menuItem10 = new System.Windows.Forms.MenuItem();
+      this.menuItem11 = new System.Windows.Forms.MenuItem();
       this.menuItem6 = new System.Windows.Forms.MenuItem();
       this.menuItem7 = new System.Windows.Forms.MenuItem();
       this.statusBar = new System.Windows.Forms.StatusBar();
@@ -53,22 +56,34 @@ namespace WatchDog
       this.NormalModeRadioButton = new System.Windows.Forms.RadioButton();
       this.ProceedButton = new System.Windows.Forms.Button();
       this.label2 = new System.Windows.Forms.Label();
+      this.label3 = new System.Windows.Forms.Label();
       this.settingsGroup.SuspendLayout();
       this.SuspendLayout();
       // 
       // settingsGroup
       // 
-      this.settingsGroup.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                  | System.Windows.Forms.AnchorStyles.Right)));
+      this.settingsGroup.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+      this.settingsGroup.Controls.Add(this.btnZipFileReset);
       this.settingsGroup.Controls.Add(this.btnZipFile);
       this.settingsGroup.Controls.Add(this.tbZipFile);
       this.settingsGroup.Controls.Add(this.logDirLabel);
       this.settingsGroup.Location = new System.Drawing.Point(12, 12);
       this.settingsGroup.Name = "settingsGroup";
-      this.settingsGroup.Size = new System.Drawing.Size(403, 86);
+      this.settingsGroup.Size = new System.Drawing.Size(438, 86);
       this.settingsGroup.TabIndex = 2;
       this.settingsGroup.TabStop = false;
       this.settingsGroup.Text = "Settings";
+      // 
+      // btnZipFileReset
+      // 
+      this.btnZipFileReset.Location = new System.Drawing.Point(333, 57);
+      this.btnZipFileReset.Name = "btnZipFileReset";
+      this.btnZipFileReset.Size = new System.Drawing.Size(64, 23);
+      this.btnZipFileReset.TabIndex = 4;
+      this.btnZipFileReset.Text = "Reset";
+      this.btnZipFileReset.UseVisualStyleBackColor = true;
+      this.btnZipFileReset.Click += new System.EventHandler(this.btnZipFileReset_Click);
       // 
       // btnZipFile
       // 
@@ -85,6 +100,7 @@ namespace WatchDog
       this.tbZipFile.Name = "tbZipFile";
       this.tbZipFile.Size = new System.Drawing.Size(321, 20);
       this.tbZipFile.TabIndex = 2;
+      this.tbZipFile.TextChanged += new System.EventHandler(this.tbZipFile_TextChanged);
       // 
       // logDirLabel
       // 
@@ -94,43 +110,30 @@ namespace WatchDog
       this.logDirLabel.TabIndex = 2;
       this.logDirLabel.Text = "Resulting ZIP of logs";
       // 
-      // label3
-      // 
-      this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                  | System.Windows.Forms.AnchorStyles.Left)
-                  | System.Windows.Forms.AnchorStyles.Right)));
-      this.label3.Location = new System.Drawing.Point(12, 288);
-      this.label3.Name = "label3";
-      this.label3.Padding = new System.Windows.Forms.Padding(18, 0, 0, 0);
-      this.label3.Size = new System.Drawing.Size(403, 59);
-      this.label3.TabIndex = 9;
-      this.label3.Text = "If MediaPortal crashes unexpectedly, or if you can not reproduce an issue nicely," +
-          " then this option will simply export all the currently available log files.";
-      // 
       // ExportLogsRadioButton
       // 
       this.ExportLogsRadioButton.AutoSize = true;
       this.ExportLogsRadioButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
       this.ExportLogsRadioButton.Location = new System.Drawing.Point(12, 268);
       this.ExportLogsRadioButton.Name = "ExportLogsRadioButton";
-      this.ExportLogsRadioButton.Size = new System.Drawing.Size(204, 17);
+      this.ExportLogsRadioButton.Size = new System.Drawing.Size(389, 17);
       this.ExportLogsRadioButton.TabIndex = 8;
       this.ExportLogsRadioButton.TabStop = true;
-      this.ExportLogsRadioButton.Text = "Export all currently present logs";
+      this.ExportLogsRadioButton.Text = "Export all currently present logs from MediaPortal and TV Server";
       this.ExportLogsRadioButton.UseVisualStyleBackColor = true;
       // 
       // label1
       // 
-      this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                  | System.Windows.Forms.AnchorStyles.Left)
-                  | System.Windows.Forms.AnchorStyles.Right)));
+      this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
       this.label1.Location = new System.Drawing.Point(12, 124);
       this.label1.Name = "label1";
       this.label1.Padding = new System.Windows.Forms.Padding(18, 0, 0, 0);
-      this.label1.Size = new System.Drawing.Size(403, 59);
+      this.label1.Size = new System.Drawing.Size(438, 59);
       this.label1.TabIndex = 1;
       this.label1.Text = "This will start MediaPortal using the default skin, and only plugins which were p" +
-          "art of the release version you installed. No extensions will be loaded.";
+    "art of the release version you installed. No extensions will be loaded.";
       // 
       // SafeModeRadioButton
       // 
@@ -150,6 +153,7 @@ namespace WatchDog
       this.mainMenu.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.menuItem1,
             this.menuItem3,
+            this.menuItem9,
             this.menuItem6});
       // 
       // menuItem1
@@ -161,6 +165,7 @@ namespace WatchDog
       // 
       // menuItem2
       // 
+      this.menuItem2.Checked = true;
       this.menuItem2.Index = 0;
       this.menuItem2.Text = "Exit";
       this.menuItem2.Click += new System.EventHandler(this.menuItem2_Click);
@@ -189,9 +194,29 @@ namespace WatchDog
       this.menuItem5.Index = 2;
       this.menuItem5.Text = "3. Perform post-test actions";
       // 
+      // menuItem9
+      // 
+      this.menuItem9.Index = 2;
+      this.menuItem9.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.menuItem10,
+            this.menuItem11});
+      this.menuItem9.Text = "Manage TV Server";
+      // 
+      // menuItem10
+      // 
+      this.menuItem10.Index = 0;
+      this.menuItem10.Text = "Start TV Server";
+      this.menuItem10.Click += new System.EventHandler(this.menuItem10_Click);
+      // 
+      // menuItem11
+      // 
+      this.menuItem11.Index = 1;
+      this.menuItem11.Text = "Stop TV Server";
+      this.menuItem11.Click += new System.EventHandler(this.menuItem11_Click);
+      // 
       // menuItem6
       // 
-      this.menuItem6.Index = 2;
+      this.menuItem6.Index = 3;
       this.menuItem6.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.menuItem7});
       this.menuItem6.Text = "Help";
@@ -204,9 +229,9 @@ namespace WatchDog
       // 
       // statusBar
       // 
-      this.statusBar.Location = new System.Drawing.Point(0, 403);
+      this.statusBar.Location = new System.Drawing.Point(0, 364);
       this.statusBar.Name = "statusBar";
-      this.statusBar.Size = new System.Drawing.Size(427, 20);
+      this.statusBar.Size = new System.Drawing.Size(462, 20);
       this.statusBar.TabIndex = 6;
       this.statusBar.Text = "Status: Idle";
       // 
@@ -240,7 +265,7 @@ namespace WatchDog
       // ProceedButton
       // 
       this.ProceedButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-      this.ProceedButton.Location = new System.Drawing.Point(339, 374);
+      this.ProceedButton.Location = new System.Drawing.Point(374, 335);
       this.ProceedButton.Name = "ProceedButton";
       this.ProceedButton.Size = new System.Drawing.Size(75, 23);
       this.ProceedButton.TabIndex = 8;
@@ -250,23 +275,36 @@ namespace WatchDog
       // 
       // label2
       // 
-      this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                  | System.Windows.Forms.AnchorStyles.Left)
-                  | System.Windows.Forms.AnchorStyles.Right)));
+      this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
       this.label2.Location = new System.Drawing.Point(12, 206);
       this.label2.Name = "label2";
       this.label2.Padding = new System.Windows.Forms.Padding(18, 0, 0, 0);
-      this.label2.Size = new System.Drawing.Size(391, 59);
+      this.label2.Size = new System.Drawing.Size(426, 47);
       this.label2.TabIndex = 2;
       this.label2.Text = "Besides setting the log level to \"debug\", this option will start MediaPortal as c" +
-          "onfigured, using all extensions you have installed.";
+    "onfigured, using all extensions you have installed.";
+      // 
+      // label3
+      // 
+      this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+      this.label3.Location = new System.Drawing.Point(12, 288);
+      this.label3.Name = "label3";
+      this.label3.Padding = new System.Windows.Forms.Padding(18, 0, 0, 0);
+      this.label3.Size = new System.Drawing.Size(438, 44);
+      this.label3.TabIndex = 9;
+      this.label3.Text = "If MediaPortal crashes unexpectedly, or if you can not reproduce an issue nicely," +
+    " then this option will simply export all the currently available log files.";
       // 
       // MPWatchDog
       // 
       this.AcceptButton = this.ProceedButton;
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.ClientSize = new System.Drawing.Size(427, 423);
+      this.ClientSize = new System.Drawing.Size(462, 384);
       this.Controls.Add(this.label3);
       this.Controls.Add(this.ExportLogsRadioButton);
       this.Controls.Add(this.label2);
@@ -310,8 +348,12 @@ namespace WatchDog
     private System.Windows.Forms.RadioButton ExportLogsRadioButton;
     private System.Windows.Forms.Label label1;
     private System.Windows.Forms.RadioButton NormalModeRadioButton;
-    private System.Windows.Forms.Label label3;
     private System.Windows.Forms.Button ProceedButton;
     private System.Windows.Forms.Label label2;
+    private System.Windows.Forms.MenuItem menuItem9;
+    private System.Windows.Forms.MenuItem menuItem10;
+    private System.Windows.Forms.MenuItem menuItem11;
+    private System.Windows.Forms.Button btnZipFileReset;
+    private System.Windows.Forms.Label label3;
   }
 }

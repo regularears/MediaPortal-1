@@ -33,6 +33,8 @@ using MediaPortal.Configuration;
 using MediaPortal.Profile;
 using WatchDog.Properties;
 using Settings = MediaPortal.Profile.Settings;
+using System.ServiceProcess;
+using System.Security.Principal;
 
 namespace WatchDog
 {
@@ -42,13 +44,14 @@ namespace WatchDog
 
     private const string Default4To3Skin = "Default";
     private const string Default16To9Skin = "Titan";
+    private static string[] logNames = { "Application", "System" };
 
     #endregion
 
     #region Variables
 
     private readonly string _tempDir = "";
-    private string _zipFile = "";
+    public static string zipFile = "";
     private string _tempConfig;
     private bool _autoMode;
     private bool _watchdog;
@@ -59,6 +62,8 @@ namespace WatchDog
     private readonly List<string> _knownPids = new List<string>();
     private bool _safeMode;
     private int GraphsCreated { get; set; }
+    private string _watchdogtargetDir = "";
+    private string _watchdogAppDir = "";
 
     #endregion
 
@@ -163,9 +168,9 @@ namespace WatchDog
 
     private string GetZipFilename()
     {
-      _zipFile = tbZipFile.Text;
-      return _zipFile
-        .Replace("[date]", DateTime.Now.ToString("dd_MM_yy"))
+      zipFile = tbZipFile.Text;
+      return zipFile
+        .Replace("[date]", DateTime.Now.ToString("yy_MM_dd"))
         .Replace("[time]", DateTime.Now.ToString("HH_mm"));
     }
 
@@ -173,6 +178,14 @@ namespace WatchDog
 
     public MPWatchDog()
     {
+      // Read Watchdog setting from XML files
+      _watchdogAppDir = Config.GetFile(Config.Dir.Config , "watchdog.xml");
+
+      using (Settings xmlreader = new Settings(_watchdogAppDir, false))
+      {
+        _watchdogtargetDir = xmlreader.GetValueAsString("general", "watchdogTargetDir", "");
+      }
+     
       GraphsCreated = 0;
       Thread.CurrentThread.Name = "MPWatchDog";
       InitializeComponent();
@@ -182,13 +195,22 @@ namespace WatchDog
         _tempDir += "\\";
       }
       _tempDir += "MPTemp";
-      _zipFile = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) +
-                 "\\MediaPortalLogs_[date]__[time].zip";
+      
+      if (_watchdogtargetDir == string.Empty)
+      {
+        zipFile = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) 
+          + "\\MediaPortal-Logs\\MediaPortalLogs_[date]__[time].zip";
+      }
+      else
+      {
+        zipFile = _watchdogtargetDir + "\\MediaPortalLogs_[date]__[time].zip";
+      }
+      
       if (!ParseCommandLine())
       {
         Application.Exit();
       }
-      tbZipFile.Text = _zipFile;
+      tbZipFile.Text = zipFile;
       if (_autoMode)
       {
         if (!CheckRequirements())
@@ -230,7 +252,7 @@ namespace WatchDog
         switch (args[i].ToLowerInvariant())
         {
           case "-zipfile":
-            _zipFile = args[++i];
+            zipFile = args[++i];
             break;
           case "-safe":
             _safeMode = true;
@@ -298,7 +320,7 @@ namespace WatchDog
       if (dr == DialogResult.OK)
       {
         tbZipFile.Text = saveDialog.FileName;
-        _zipFile = tbZipFile.Text;
+        zipFile = tbZipFile.Text;
       }
     }
 
@@ -527,6 +549,64 @@ namespace WatchDog
           }
         }
       }
+    }
+
+    private void menuItem10_Click(object sender, EventArgs e)
+    {
+      SetStatus("Busy...");
+      EnableChoice(false);
+      ProceedButton.Enabled = false;
+
+      TVServerManager mngr = new TVServerManager();
+      mngr.TvServerRemoteStart();
+
+      SetStatus("idle");
+      EnableChoice(true);
+      ProceedButton.Enabled = true;
+    }
+
+    private void menuItem11_Click(object sender, EventArgs e)
+    {
+      SetStatus("Busy...");
+      EnableChoice(false);
+      ProceedButton.Enabled = false;
+
+      TVServerManager mngr = new TVServerManager();
+      mngr.TvServerRemoteStop();
+
+      SetStatus("idle");
+      EnableChoice(true);
+      ProceedButton.Enabled = true;
+    }
+
+    private string GetDirectoryName(string f)
+    {
+      try
+      {
+        int posOfDirSep = f.LastIndexOf("\\");
+        if (posOfDirSep >= 0)
+          return f.Substring(0, posOfDirSep);
+        else return string.Empty;
+      }
+      catch (Exception)
+      {
+        return string.Empty;
+      }
+    }
+
+    private void tbZipFile_TextChanged(object sender, EventArgs e)
+    {
+      using (var xmlwriter = new Settings(_watchdogAppDir, false))
+      {
+        xmlwriter.SetValue("general", "watchdogTargetDir", GetDirectoryName(tbZipFile.Text));
+      }
+    }
+
+    private void btnZipFileReset_Click(object sender, EventArgs e)
+    {
+      zipFile = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory)
+         + "\\MediaPortal-Logs\\MediaPortalLogs_[date]__[time].zip";
+      tbZipFile.Text = zipFile;
     }
   }
 }
