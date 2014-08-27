@@ -44,9 +44,14 @@ namespace WatchDog
       this.menuItem4 = new System.Windows.Forms.MenuItem();
       this.menuItem8 = new System.Windows.Forms.MenuItem();
       this.menuItem5 = new System.Windows.Forms.MenuItem();
+      this.menuItem13 = new System.Windows.Forms.MenuItem();
+      this.menuItem14 = new System.Windows.Forms.MenuItem();
+      this.menuItemStartTVserver = new System.Windows.Forms.MenuItem();
+      this.menuItemStopTVserver = new System.Windows.Forms.MenuItem();
+      this.menuItemClearWEventLogOnTVserver = new System.Windows.Forms.MenuItem();
       this.menuItem9 = new System.Windows.Forms.MenuItem();
-      this.menuItem10 = new System.Windows.Forms.MenuItem();
-      this.menuItem11 = new System.Windows.Forms.MenuItem();
+      this.menuItemClearEventLogs = new System.Windows.Forms.MenuItem();
+      this.menuItemClearMPlogs = new System.Windows.Forms.MenuItem();
       this.menuItem6 = new System.Windows.Forms.MenuItem();
       this.menuItem7 = new System.Windows.Forms.MenuItem();
       this.statusBar = new System.Windows.Forms.StatusBar();
@@ -57,6 +62,7 @@ namespace WatchDog
       this.ProceedButton = new System.Windows.Forms.Button();
       this.label2 = new System.Windows.Forms.Label();
       this.label3 = new System.Windows.Forms.Label();
+      this.menuItemClearTVserverLogs = new System.Windows.Forms.MenuItem();
       this.settingsGroup.SuspendLayout();
       this.SuspendLayout();
       // 
@@ -70,7 +76,7 @@ namespace WatchDog
       this.settingsGroup.Controls.Add(this.logDirLabel);
       this.settingsGroup.Location = new System.Drawing.Point(12, 12);
       this.settingsGroup.Name = "settingsGroup";
-      this.settingsGroup.Size = new System.Drawing.Size(438, 86);
+      this.settingsGroup.Size = new System.Drawing.Size(410, 86);
       this.settingsGroup.TabIndex = 2;
       this.settingsGroup.TabStop = false;
       this.settingsGroup.Text = "Settings";
@@ -130,7 +136,7 @@ namespace WatchDog
       this.label1.Location = new System.Drawing.Point(12, 124);
       this.label1.Name = "label1";
       this.label1.Padding = new System.Windows.Forms.Padding(18, 0, 0, 0);
-      this.label1.Size = new System.Drawing.Size(438, 59);
+      this.label1.Size = new System.Drawing.Size(410, 39);
       this.label1.TabIndex = 1;
       this.label1.Text = "This will start MediaPortal using the default skin, and only plugins which were p" +
     "art of the release version you installed. No extensions will be loaded.";
@@ -153,7 +159,7 @@ namespace WatchDog
       this.mainMenu.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.menuItem1,
             this.menuItem3,
-            this.menuItem9,
+            this.menuItem13,
             this.menuItem6});
       // 
       // menuItem1
@@ -194,25 +200,61 @@ namespace WatchDog
       this.menuItem5.Index = 2;
       this.menuItem5.Text = "3. Perform post-test actions";
       // 
+      // menuItem13
+      // 
+      this.menuItem13.Index = 2;
+      this.menuItem13.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.menuItem14,
+            this.menuItem9});
+      this.menuItem13.Text = "Tools";
+      // 
+      // menuItem14
+      // 
+      this.menuItem14.Index = 0;
+      this.menuItem14.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.menuItemStartTVserver,
+            this.menuItemStopTVserver,
+            this.menuItemClearWEventLogOnTVserver,
+            this.menuItemClearTVserverLogs});
+      this.menuItem14.Text = "Manage TV server";
+      // 
+      // menuItemStartTVserver
+      // 
+      this.menuItemStartTVserver.Index = 0;
+      this.menuItemStartTVserver.Text = "Start TV Server";
+      this.menuItemStartTVserver.Click += new System.EventHandler(this.menuItemStartTVserver_Click);
+      // 
+      // menuItemStopTVserver
+      // 
+      this.menuItemStopTVserver.Index = 1;
+      this.menuItemStopTVserver.Text = "Stop TV Server";
+      this.menuItemStopTVserver.Click += new System.EventHandler(this.menuItemStopTVserver_Click);
+      // 
+      // menuItemClearWEventLogOnTVserver
+      // 
+      this.menuItemClearWEventLogOnTVserver.Index = 2;
+      this.menuItemClearWEventLogOnTVserver.Text = "Clear Windows EventLog";
+      this.menuItemClearWEventLogOnTVserver.Click += new System.EventHandler(this.menuItemClearWEventLogOnTVserver_Click);
+      // 
       // menuItem9
       // 
-      this.menuItem9.Index = 2;
+      this.menuItem9.Index = 1;
       this.menuItem9.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-            this.menuItem10,
-            this.menuItem11});
-      this.menuItem9.Text = "Manage TV Server";
+            this.menuItemClearEventLogs,
+            this.menuItemClearMPlogs});
+      this.menuItem9.Text = "Manage MediaPortal Client";
       // 
-      // menuItem10
+      // menuItemClearEventLogs
       // 
-      this.menuItem10.Index = 0;
-      this.menuItem10.Text = "Start TV Server";
-      this.menuItem10.Click += new System.EventHandler(this.menuItem10_Click);
+      this.menuItemClearEventLogs.Index = 0;
+      this.menuItemClearEventLogs.Text = "Clear Windows EventLogs";
+      this.menuItemClearEventLogs.Click += new System.EventHandler(this.menuItemClearEventLogs_Click);
       // 
-      // menuItem11
+      // menuItemClearMPlogs
       // 
-      this.menuItem11.Index = 1;
-      this.menuItem11.Text = "Stop TV Server";
-      this.menuItem11.Click += new System.EventHandler(this.menuItem11_Click);
+      this.menuItemClearMPlogs.Index = 1;
+      this.menuItemClearMPlogs.Text = "Clear MediaPortal logs";
+      this.menuItemClearMPlogs.Click += new System.EventHandler(this.menuItemClearMPlogs_Click);
       // 
       // menuItem6
       // 
@@ -229,9 +271,9 @@ namespace WatchDog
       // 
       // statusBar
       // 
-      this.statusBar.Location = new System.Drawing.Point(0, 364);
+      this.statusBar.Location = new System.Drawing.Point(0, 344);
       this.statusBar.Name = "statusBar";
-      this.statusBar.Size = new System.Drawing.Size(462, 20);
+      this.statusBar.Size = new System.Drawing.Size(434, 20);
       this.statusBar.TabIndex = 6;
       this.statusBar.Text = "Status: Idle";
       // 
@@ -265,7 +307,7 @@ namespace WatchDog
       // ProceedButton
       // 
       this.ProceedButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-      this.ProceedButton.Location = new System.Drawing.Point(374, 335);
+      this.ProceedButton.Location = new System.Drawing.Point(334, 315);
       this.ProceedButton.Name = "ProceedButton";
       this.ProceedButton.Size = new System.Drawing.Size(75, 23);
       this.ProceedButton.TabIndex = 8;
@@ -281,7 +323,7 @@ namespace WatchDog
       this.label2.Location = new System.Drawing.Point(12, 206);
       this.label2.Name = "label2";
       this.label2.Padding = new System.Windows.Forms.Padding(18, 0, 0, 0);
-      this.label2.Size = new System.Drawing.Size(426, 47);
+      this.label2.Size = new System.Drawing.Size(398, 27);
       this.label2.TabIndex = 2;
       this.label2.Text = "Besides setting the log level to \"debug\", this option will start MediaPortal as c" +
     "onfigured, using all extensions you have installed.";
@@ -294,17 +336,23 @@ namespace WatchDog
       this.label3.Location = new System.Drawing.Point(12, 288);
       this.label3.Name = "label3";
       this.label3.Padding = new System.Windows.Forms.Padding(18, 0, 0, 0);
-      this.label3.Size = new System.Drawing.Size(438, 44);
+      this.label3.Size = new System.Drawing.Size(410, 24);
       this.label3.TabIndex = 9;
       this.label3.Text = "If MediaPortal crashes unexpectedly, or if you can not reproduce an issue nicely," +
     " then this option will simply export all the currently available log files.";
+      // 
+      // menuItemClearTVserverLogs
+      // 
+      this.menuItemClearTVserverLogs.Index = 3;
+      this.menuItemClearTVserverLogs.Text = "Clear TV Server logs";
+      this.menuItemClearTVserverLogs.Click += new System.EventHandler(this.menuItemClearTVserverLogs_Click);
       // 
       // MPWatchDog
       // 
       this.AcceptButton = this.ProceedButton;
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.ClientSize = new System.Drawing.Size(462, 384);
+      this.ClientSize = new System.Drawing.Size(434, 364);
       this.Controls.Add(this.label3);
       this.Controls.Add(this.ExportLogsRadioButton);
       this.Controls.Add(this.label2);
@@ -350,10 +398,16 @@ namespace WatchDog
     private System.Windows.Forms.RadioButton NormalModeRadioButton;
     private System.Windows.Forms.Button ProceedButton;
     private System.Windows.Forms.Label label2;
-    private System.Windows.Forms.MenuItem menuItem9;
-    private System.Windows.Forms.MenuItem menuItem10;
-    private System.Windows.Forms.MenuItem menuItem11;
     private System.Windows.Forms.Button btnZipFileReset;
     private System.Windows.Forms.Label label3;
+    private System.Windows.Forms.MenuItem menuItem13;
+    private System.Windows.Forms.MenuItem menuItem14;
+    private System.Windows.Forms.MenuItem menuItemStartTVserver;
+    private System.Windows.Forms.MenuItem menuItemStopTVserver;
+    private System.Windows.Forms.MenuItem menuItem9;
+    private System.Windows.Forms.MenuItem menuItemClearEventLogs;
+    private System.Windows.Forms.MenuItem menuItemClearMPlogs;
+    private System.Windows.Forms.MenuItem menuItemClearWEventLogOnTVserver;
+    private System.Windows.Forms.MenuItem menuItemClearTVserverLogs;
   }
 }

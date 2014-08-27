@@ -32,5 +32,7 @@ namespace WatchDogService.Interface
     Object ReadLog();
     string StartTVService();
     string StopTVService();
+    string ClearTVserverLogs();
+    string ClearWindowsEventLogs();
   }
 }

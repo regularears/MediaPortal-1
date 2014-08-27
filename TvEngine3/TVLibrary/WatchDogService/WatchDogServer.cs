@@ -144,5 +144,73 @@ namespace WatchDogService
 
       return (object)sr;
     }
+
+    public string ClearWindowsEventLogs()
+    {
+      string result = "Success";
+      string[] logNames = { "Application", "System", "WatchDogServiceLog"};
+      foreach (string strLogName in logNames)
+      {
+        EventLog e = new EventLog(strLogName);
+        try
+        {
+          e.Clear();
+        }
+        catch (Exception ex) 
+        {  
+           result = "Failed.";
+        }
+      }
+      return result;
+    }
+
+    public string ClearTVserverLogs()
+    {
+      string logPath = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) +
+                  "\\Team MediaPortal\\MediaPortal TV Server\\log";
+      bool result = ClearDir(logPath);
+
+      return result ? "Success" : "Failed.";
+    }
+
+    private bool ClearDir(string strDir)
+    {
+      string[] files = Directory.GetFiles(strDir);
+      string[] dirs = Directory.GetDirectories(strDir);
+
+      bool result = true;
+
+      foreach (string file in files)
+      {
+        if (File.Exists(file))
+        {
+          try
+          {
+            File.Delete(file);
+          }
+          catch (Exception) 
+          {
+            result = false;
+          }
+        }
+      }
+
+      foreach (string dir in dirs)
+      {
+        if (Directory.Exists(dir))
+        {
+          try
+          {
+            Directory.Delete(dir, true);
+          }
+          catch (Exception) 
+          {
+            result = false;
+          }
+        }
+      }
+      return result;
+    }
+
   }
 }

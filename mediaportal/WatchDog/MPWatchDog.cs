@@ -44,7 +44,6 @@ namespace WatchDog
 
     private const string Default4To3Skin = "Default";
     private const string Default16To9Skin = "Titan";
-    private static string[] logNames = { "Application", "System" };
 
     #endregion
 
@@ -551,7 +550,7 @@ namespace WatchDog
       }
     }
 
-    private void menuItem10_Click(object sender, EventArgs e)
+    private void menuItemStartTVserver_Click(object sender, EventArgs e)
     {
       SetStatus("Busy...");
       EnableChoice(false);
@@ -565,7 +564,7 @@ namespace WatchDog
       ProceedButton.Enabled = true;
     }
 
-    private void menuItem11_Click(object sender, EventArgs e)
+    private void menuItemStopTVserver_Click(object sender, EventArgs e)
     {
       SetStatus("Busy...");
       EnableChoice(false);
@@ -594,6 +593,50 @@ namespace WatchDog
       }
     }
 
+    private void ClearEventLog()
+    {
+      string[] logNames = { "Application", "System" };
+      foreach (string strLogName in logNames)
+      {
+        EventLog e = new EventLog(strLogName);
+        try
+        {
+          e.Clear();
+        }
+        catch (Exception) { }
+      }
+    }
+
+    private void ClearDir(string strDir)
+    {
+      string[] files = Directory.GetFiles(strDir);
+      string[] dirs = Directory.GetDirectories(strDir);
+ 
+      foreach (string file in files)
+      {
+        if (File.Exists(file))
+        {
+          try
+          {
+            File.Delete(file);
+          }
+          catch (Exception) {}
+        }
+      }
+ 
+      foreach (string dir in dirs)
+      {
+      if (Directory.Exists(dir))
+      {
+        try
+        {
+          Directory.Delete(dir, true);
+        }
+        catch (Exception) {}
+      }
+    }
+  }
+
     private void tbZipFile_TextChanged(object sender, EventArgs e)
     {
       using (var xmlwriter = new Settings(_watchdogAppDir, false))
@@ -607,6 +650,28 @@ namespace WatchDog
       zipFile = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory)
          + "\\MediaPortal-Logs\\MediaPortalLogs_[date]__[time].zip";
       tbZipFile.Text = zipFile;
+    }
+
+    private void menuItemClearEventLogs_Click(object sender, EventArgs e)
+    {
+      ClearEventLog();
+    }
+
+    private void menuItemClearMPlogs_Click(object sender, EventArgs e)
+    {
+      ClearDir(Config.GetFolder(Config.Dir.Log));
+    }
+
+    private void menuItemClearWEventLogOnTVserver_Click(object sender, EventArgs e)
+    {
+      TVServerManager mngr = new TVServerManager();
+      mngr.ClearWindowsEventLogs();
+    }
+
+    private void menuItemClearTVserverLogs_Click(object sender, EventArgs e)
+    {
+      TVServerManager mngr = new TVServerManager();
+      mngr.ClearTVserverLogs();
     }
   }
 }

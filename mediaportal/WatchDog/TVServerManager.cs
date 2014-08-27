@@ -164,5 +164,56 @@ namespace WatchDog
       {
       }
     }
+
+    public void ClearTVserverLogs()
+    {
+      string result = string.Empty;
+      try
+      {
+        _remoteObject = (WatchDogServiceInterface)Activator.GetObject(typeof(WatchDogServiceInterface), _url);
+
+        result = _remoteObject.ClearTVserverLogs();
+      }
+      catch (Exception ex)
+      {
+        MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        return;
+      }
+
+      try
+      {
+        ChannelServices.UnregisterChannel(_httpChannel);
+      }
+      catch (Exception ex)
+      {
+      }
+      MessageBox.Show(result, "Status", MessageBoxButtons.OK, MessageBoxIcon.Information);
+    }
+
+    public void ClearWindowsEventLogs()
+    {
+      string result = string.Empty;
+      try
+      {
+        _remoteObject = (WatchDogServiceInterface)Activator.GetObject(typeof(WatchDogServiceInterface), _url);
+
+        result = _remoteObject.ClearWindowsEventLogs();
+      }
+      catch (Exception ex)
+      {
+        MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        return;
+      }
+
+      try
+      {
+        ChannelServices.UnregisterChannel(_httpChannel);
+      }
+      catch (Exception ex)
+      {
+      }
+      MessageBox.Show(result, "Status", MessageBoxButtons.OK, MessageBoxIcon.Information);
+    }
+
   }
 }
