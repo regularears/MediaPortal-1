@@ -184,7 +184,7 @@ namespace WatchDog
         setAction("Collecting the logs from remote server...");
         Update();
 
-        string zipFile = _zipFile.Replace("MediaPortal", "MediaPortal_TV_Server");
+        string zipFile = _zipFile.Replace("MediaPortalLogs_", "MediaPortal_TVserverLogs_");
         TVServerManager mngr = new TVServerManager();
         mngr.TvServerRemoteLogRead(zipFile);
       }

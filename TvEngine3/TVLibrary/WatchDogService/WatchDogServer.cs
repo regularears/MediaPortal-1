@@ -55,7 +55,7 @@ namespace WatchDogService
           sc.Refresh();
           if (i == 60)
           {
-            return "Failed.";
+            return "Failed to start TVService.";
           }
         }
         result = "TVService started successfully.";
@@ -103,7 +103,7 @@ namespace WatchDogService
       ILogCreator TvServerLog = new TvServerLogger();
       ILogCreator TvServerApplicationLog = new EventLogCsvLogger("Application");
       ILogCreator TvServerSystemLog = new EventLogCsvLogger("System");
-
+      ILogCreator TvServerWatchDogServiceLog = new EventLogCsvLogger("WatchDogServiceLog");
 
       if (!Directory.Exists(_tmpDir))
       {
@@ -118,7 +118,8 @@ namespace WatchDogService
       TvServerLog.CreateLogs(_tmpDir);
       TvServerApplicationLog.CreateLogs(_tmpDir);
       TvServerSystemLog.CreateLogs(_tmpDir);
-      
+      TvServerWatchDogServiceLog.CreateLogs(_tmpDir);
+
       using (Archiver archiver = new Archiver())
       {
         archiver.AddDirectory(_tmpDir, _zipFile, false);
@@ -158,7 +159,7 @@ namespace WatchDogService
         }
         catch (Exception ex) 
         {  
-           result = "Failed.";
+           result = string.Format("Failed: {0}", ex);
         }
       }
       return result;
