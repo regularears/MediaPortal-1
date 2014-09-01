@@ -148,7 +148,7 @@ namespace WatchDogService
 
     public string ClearWindowsEventLogs()
     {
-      string result = "Success";
+      string result = "Done.";
       string[] logNames = { "Application", "System", "WatchDogServiceLog"};
       foreach (string strLogName in logNames)
       {
@@ -169,17 +169,15 @@ namespace WatchDogService
     {
       string logPath = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) +
                   "\\Team MediaPortal\\MediaPortal TV Server\\log";
-      bool result = ClearDir(logPath);
+      ClearDir(logPath);
 
-      return result ? "Success" : "Failed.";
+      return "Done.";
     }
 
-    private bool ClearDir(string strDir)
+    private void ClearDir(string strDir)
     {
       string[] files = Directory.GetFiles(strDir);
       string[] dirs = Directory.GetDirectories(strDir);
-
-      bool result = true;
 
       foreach (string file in files)
       {
@@ -189,10 +187,7 @@ namespace WatchDogService
           {
             File.Delete(file);
           }
-          catch (Exception) 
-          {
-            result = false;
-          }
+          catch (Exception) { }
         }
       }
 
@@ -204,13 +199,10 @@ namespace WatchDogService
           {
             Directory.Delete(dir, true);
           }
-          catch (Exception) 
-          {
-            result = false;
-          }
+          catch (Exception) { }
         }
       }
-      return result;
+      return;
     }
 
   }
