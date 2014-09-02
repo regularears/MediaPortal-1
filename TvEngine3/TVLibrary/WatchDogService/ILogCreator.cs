@@ -23,6 +23,5 @@ namespace WatchDogService
   public interface ILogCreator
   {
     void CreateLogs(string destinationFolder);
-    string ActionMessage { get; }
   }
 }

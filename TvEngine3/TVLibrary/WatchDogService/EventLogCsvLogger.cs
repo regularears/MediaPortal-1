@@ -35,28 +35,27 @@ namespace WatchDogService
 
     public void CreateLogs(string destinationFolder)
     {
-      string filename = Path.GetFullPath(destinationFolder) + "\\" + logname + "_eventlog.csv";
-      using (StreamWriter writer = new StreamWriter(filename))
+      try
       {
-        writer.WriteLine("\"TimeGenerated\";\"Source\";\"Category\";\"EntryType\";\"Message\";\"InstanceID\"");
-        EventLog log = new EventLog(logname);
-        foreach (EventLogEntry entry in log.Entries)
+        string filename = Path.GetFullPath(destinationFolder) + "\\" + logname + "_eventlog.csv";
+        using (StreamWriter writer = new StreamWriter(filename))
         {
-          string line = "\"" + entry.TimeGenerated.ToString() + "\";";
-          line += "\"" + entry.Source + "\";";
-          line += "\"" + entry.Category + "\";";
-          line += "\"" + entry.EntryType.ToString() + "\";";
-          line += "\"" + entry.Message.Replace(Environment.NewLine, " ") + "\";";
-          line += "\"" + entry.InstanceId.ToString() + "\"";
-          writer.WriteLine(line);
+          writer.WriteLine("\"TimeGenerated\";\"Source\";\"Category\";\"EntryType\";\"Message\";\"InstanceID\"");
+          EventLog log = new EventLog(logname);
+          foreach (EventLogEntry entry in log.Entries)
+          {
+            string line = "\"" + entry.TimeGenerated.ToString() + "\";";
+            line += "\"" + entry.Source + "\";";
+            line += "\"" + entry.Category + "\";";
+            line += "\"" + entry.EntryType.ToString() + "\";";
+            line += "\"" + entry.Message.Replace(Environment.NewLine, " ") + "\";";
+            line += "\"" + entry.InstanceId.ToString() + "\"";
+            writer.WriteLine(line);
+          }
+          writer.Close();
         }
-        writer.Close();
       }
-    }
-
-    public string ActionMessage
-    {
-      get { return "Gathering system eventlog information..."; }
+      catch { }
     }
   }
 }
