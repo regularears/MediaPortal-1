@@ -51,6 +51,7 @@ namespace WatchDogService
 
     protected override void OnStart(string[] args)
     {
+      _eventLog.WriteEntry("WatchDogService OnStart", EventLogEntryType.Information);
       try
       {
         _httpChannel = new HttpChannel(9997);
@@ -74,6 +75,7 @@ namespace WatchDogService
 
     protected override void OnStop()
     {
+      _eventLog.WriteEntry("WatchDogService OnStop", EventLogEntryType.Information);
       try
       {
         ChannelServices.UnregisterChannel(_httpChannel);
