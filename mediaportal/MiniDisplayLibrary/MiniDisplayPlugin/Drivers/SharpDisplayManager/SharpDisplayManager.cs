@@ -7,9 +7,9 @@ using MediaPortal.GUI.Library;
 using System.Windows.Forms;
 using System.ServiceModel;
 using System.Runtime.Serialization;
-using SharpDisplayInterface;
+using SharpDisplay;
 
-namespace SharpDisplayInterface
+namespace SharpDisplay
 {
     //That contract need to be in the same namespace than the original assembly
     //otherwise our parameter won't make to the server.
@@ -42,9 +42,8 @@ namespace SharpDisplayInterface
     }
 
 
-    [ServiceContract(CallbackContract = typeof(IDisplayServiceCallback),
-                        SessionMode = SessionMode.Required)]
-    public interface IDisplayService
+    [ServiceContract(CallbackContract = typeof(ICallback), SessionMode = SessionMode.Required)]
+    public interface IService
     {
         /// <summary>
         /// Set the name of this client.
@@ -81,7 +80,7 @@ namespace SharpDisplayInterface
     }
 
 
-    public interface IDisplayServiceCallback
+    public interface ICallback
     {
         [OperationContract(IsOneWay = true)]
         void OnConnected();
@@ -104,7 +103,7 @@ namespace MediaPortal.ProcessPlugins.MiniDisplayPlugin.Drivers.SharpDisplayManag
     ///
     /// </summary>
     [ServiceBehavior(ConcurrencyMode = ConcurrencyMode.Multiple)]
-    public class Client : DuplexClientBase<IDisplayService>
+    public class Client : DuplexClientBase<IService>
     {
         public string Name { get; set; }
         public string SessionId { get { return InnerChannel.SessionId; } }
@@ -136,7 +135,7 @@ namespace MediaPortal.ProcessPlugins.MiniDisplayPlugin.Drivers.SharpDisplayManag
     }
 
 
-    public class Callback : IDisplayServiceCallback, IDisposable
+    public class Callback : ICallback, IDisposable
     {
         Display iDisplay;
 
