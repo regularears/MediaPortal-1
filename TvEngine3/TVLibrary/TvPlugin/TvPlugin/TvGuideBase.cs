@@ -153,6 +153,7 @@ namespace TvPlugin
         _hdtvProgramText = xmlreader.GetValueAsString("mytv", "hdtvProgramText", "(HDTV)");
         _guideContinuousScroll = xmlreader.GetValueAsBool("mytv", "continuousScrollGuide", false);
         _loopDelay = xmlreader.GetValueAsInt("gui", "listLoopDelay", 0);
+        _useBorderHighlight = xmlreader.GetValueAsBool("mytv", "useborderhighlight", false);
 
         // Load the genre map.
         if (_mpGenres == null)
@@ -194,13 +195,6 @@ namespace TvPlugin
       if (temp != null && temp.Length != 0)
       {
         _useColorsForButtons = bool.Parse(temp);
-      }
-
-      _useBorderHighlight = false;
-      temp = GUIPropertyManager.GetProperty("#skin.tvguide.useborderhighlight");
-      if (temp != null && temp.Length != 0)
-      {
-        _useBorderHighlight = bool.Parse(temp);
       }
 
       _useColorsForGenres = false;

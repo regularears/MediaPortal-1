@@ -1019,6 +1019,14 @@ namespace MediaPortal.Configuration.Sections
         catch (System.IO.FileNotFoundException) {}
       }
 
+      // border selected program
+
+      using (Settings xmlreader = new MPSettings())
+      {
+        cbBorderHighlight.Checked =
+            xmlreader.GetValueAsBool("mytv", "useborderhighlight", false);
+      }
+
       // Load tv guide colors.
       using (Settings xmlreader = new SKSettings())
       {
@@ -1048,8 +1056,6 @@ namespace MediaPortal.Configuration.Sections
             bool.Parse(xmlreader.GetValueAsString("booleansettings", "#skin.tvguide.usecolorsforgenre", "False"));
           cbGenreColorKey.Checked =
             bool.Parse(xmlreader.GetValueAsString("booleansettings", "#skin.tvguide.showgenrekey", "False"));
-          cbBorderHighlight.Checked =
-            bool.Parse(xmlreader.GetValueAsString("booleansettings", "#skin.tvguide.useborderhighlight", "False"));
 
           cbGenreColoring.Enabled = cbColoredGuide.Checked;
           cbGenreColorKey.Enabled = cbGenreColoring.Checked;
@@ -1122,13 +1128,19 @@ namespace MediaPortal.Configuration.Sections
     {
       if (SettingsForm.UseTvServer)
       {
+        // border selected program
+
+        using (Settings xmlwriter = new MPSettings())
+        {
+           xmlwriter.SetValueAsBool("mytv", "useborderhighlight", cbBorderHighlight.Checked);
+        }
+
         using (Settings xmlwriter = new SKSettings())
         {
           xmlwriter.SetValue("theme", "name", listViewAvailableThemes.SelectedItems[0].Text);
 
           xmlwriter.SetValue("booleansettings", "#skin.tvguide.usecolorsforbuttons", cbColoredGuide.Checked);
           xmlwriter.SetValue("booleansettings", "#skin.tvguide.usecolorsforgenre", cbGenreColoring.Checked);
-          xmlwriter.SetValue("booleansettings", "#skin.tvguide.useborderhighlight", cbBorderHighlight.Checked);
           xmlwriter.SetValue("booleansettings", "#skin.tvguide.showgenrekey", cbGenreColorKey.Checked);
 
           SaveGuideColors(xmlwriter);

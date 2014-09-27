@@ -186,7 +186,25 @@ namespace TvPlugin
         _hdtvProgramText = xmlreader.GetValueAsString("myradio", "hdtvProgramText", "(HDTV)");
         _guideContinuousScroll = xmlreader.GetValueAsBool("myradio", "continuousScrollGuide", false);
         _loopDelay = xmlreader.GetValueAsInt("gui", "listLoopDelay", 0);
+        _useBorderHighlight = xmlreader.GetValueAsBool("mytv", "useborderhighlight", false);
       }
+
+      // Load settings defined by the skin.
+//      LoadSkinSettings();
+
+      // Load genre colors.
+      // If guide colors have not been loaded then attempt to load guide colors.
+
+      // this is just for the border highlight in radio EPG
+
+      if (!_guideColorsLoaded)
+      {
+        using (Settings xmlreader = new SKSettings())
+        {
+          _guideColorsLoaded = LoadGuideColors(xmlreader);
+        }
+      }
+
       _useNewRecordingButtonColor =
         Utils.FileExistsInCache(GUIGraphicsContext.GetThemedSkinFile(@"\media\tvguide_recButton_Focus_middle.png"));
       _useNewPartialRecordingButtonColor =
@@ -199,7 +217,11 @@ namespace TvPlugin
 
     protected override void LoadSkinSettings()
     {
-      // Nothing to do for RadioGuide.
+      _useBorderHighlight = false;
+
+      using (Settings xmlreader = new MPSettings())
+      {
+        _useBorderHighlight = xmlreader.GetValueAsBool("mytv", "useborderhighlight", false);
     }
 
     private void SaveSettings()
